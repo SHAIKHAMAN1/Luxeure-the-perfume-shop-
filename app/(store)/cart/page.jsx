@@ -212,14 +212,14 @@ export default function CartPage() {
             </div>
 
             {/* CTA */}
-            <button
+            <div
               onClick={() => router.push(user ? "/checkout" : "/login?redirect=/checkout")}
-              className="block w-full"
+              className="block w-full cursor-pointer"
             >
-              <GoldButton className="w-full gap-2">
+              <GoldButton className="w-full gap-2 pointer-events-none">
                 Checkout <ArrowRight className="w-4 h-4" />
               </GoldButton>
-            </button>
+            </div>
 
             {/* Secure badge */}
             <p className="text-[10px] text-[#B8B8B8]/50 text-center">

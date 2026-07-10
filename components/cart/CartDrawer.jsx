@@ -194,9 +194,15 @@ export default function CartDrawer() {
                 >
                   <GoldButton className="w-full">Proceed to Checkout</GoldButton>
                 </div>
-                <Link href="/cart" onClick={closeCart} className="block">
+                <div
+                  onClick={() => {
+                    closeCart();
+                    router.push("/cart");
+                  }}
+                  className="block w-full cursor-pointer"
+                >
                   <GoldButton variant="outline" className="w-full">View Full Cart</GoldButton>
-                </Link>
+                </div>
               </div>
             )}
           </motion.div>
