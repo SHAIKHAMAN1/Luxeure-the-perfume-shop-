@@ -7,7 +7,7 @@ const nextConfig = {
   // jose package.  When Next.js bundles these into a serverless function the
   // require() call fails with ERR_REQUIRE_ESM.  Marking them as external keeps
   // them as normal node_modules imports so the native ESM resolution works.
-  serverExternalPackages: ["firebase-admin"],
+  serverExternalPackages: ["firebase-admin", "jwks-rsa", "jose"],
 
   images: {
     remotePatterns: [
