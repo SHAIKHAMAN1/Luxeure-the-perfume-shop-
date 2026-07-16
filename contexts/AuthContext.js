@@ -36,13 +36,21 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Hard safety timeout — if Firebase or the /api/auth/me fetch stalls
+    // (e.g. MongoDB cold-start on Vercel), loading must still resolve.
+    const safetyTimer = setTimeout(() => setLoading(false), 8000);
+
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
       if (firebaseUser) {
         // Restore role from server session cookie on every page load / refresh.
-        // This prevents role falling back to "customer" after a hard refresh.
+        // Uses a 5-second AbortController so a slow MongoDB cold-start on Vercel
+        // doesn't leave loading === true forever.
         try {
-          const res  = await fetch("/api/auth/me");
+          const controller = new AbortController();
+          const timeout    = setTimeout(() => controller.abort(), 5000);
+          const res  = await fetch("/api/auth/me", { signal: controller.signal });
+          clearTimeout(timeout);
           const data = await res.json();
           if (data.authenticated) setRole(data.role);
         } catch {
@@ -51,9 +59,13 @@ export function AuthProvider({ children }) {
       } else {
         setRole("customer");
       }
+      clearTimeout(safetyTimer);
       setLoading(false);
     });
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+      clearTimeout(safetyTimer);
+    };
   }, []);
 
   /* ── Google Sign-In ─────────────────────────────────────── */
